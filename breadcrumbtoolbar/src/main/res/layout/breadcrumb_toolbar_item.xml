@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/breadcrumb_item_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/breadcrumb_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:paddingLeft="@dimen/toolbar_item_padding"
+        android:paddingRight="@dimen/toolbar_item_padding"
+        android:src="@drawable/ic_chevron_right_white_24dp"
+        android:tint="@android:color/white">
+    </ImageView>
+    <Button
+        android:id="@+id/breadcrumb_item_button"
+        style="@style/Text.Breadcrumb.Toolbar">
+    </Button>
+</LinearLayout>

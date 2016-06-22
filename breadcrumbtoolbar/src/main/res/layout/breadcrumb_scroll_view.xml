@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.rokpetek.breadcrumbtoolbar.BreadcrumbScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/breadcrumb_scroll_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/breadcrumb_scroll_view_inner_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- Items added dynamically -->
+    </LinearLayout>
+</com.rokpetek.breadcrumbtoolbar.BreadcrumbScrollView>
