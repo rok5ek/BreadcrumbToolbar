@@ -5,9 +5,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class BreadcrumbActivity extends AppCompatActivity {
 
@@ -18,15 +18,24 @@ public class BreadcrumbActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (savedInstanceState == null) {
+            BreadcrumbFragment.open(this, false, null);
+        }
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+        fab.setOnClickListener((View view) -> {
+
+            // Open a new fragment
+            BreadcrumbFragment.open(this, true, getSupportFragmentManager().getBackStackEntryCount() + 1);
+
+            // Show snackbar
+            Snackbar.make(view, R.string.new_folder_created, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.undo, (View v) -> {
+                        getSupportFragmentManager().popBackStack();
+                    }).show();
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
