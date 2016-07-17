@@ -4,12 +4,26 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
 
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.rokpetek.breadcrumbapp"
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
