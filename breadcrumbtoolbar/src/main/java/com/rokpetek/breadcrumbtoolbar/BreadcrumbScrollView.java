@@ -9,9 +9,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 
-/**
- * Created by RokPetek on 17.11.2015.
- */
 public class BreadcrumbScrollView extends HorizontalScrollView {
     private LayoutInflater inflater;
 

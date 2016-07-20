@@ -40,7 +40,11 @@ public class BreadcrumbFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_breadcrumb, container, false);
         TextView title = (TextView) rootView.findViewById(R.id.breadcrumb_folder_name);
         if (getArguments() != null) {
-            title.setText(getString(R.string.breadcrumb_name, getArguments().getInt(FRAGMENT_NUMBER_TAG)));
+            String text = getString(R.string.breadcrumb_name, getArguments().getInt(FRAGMENT_NUMBER_TAG));
+            title.setText(text);
+
+//            BreadcrumbToolbarItem item = new BreadcrumbToolbarItem(text);
+//            .addItem(item);
         }
         return rootView;
     }
