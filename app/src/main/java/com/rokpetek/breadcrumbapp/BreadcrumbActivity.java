@@ -33,10 +33,6 @@ public class BreadcrumbActivity extends AppCompatActivity implements OnBackStack
         }
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
-        // TODO delete
-        int backCount = getSupportFragmentManager().getBackStackEntryCount();
-        Log.i(TAG, "[app] onCreate backCount:" + backCount);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> {
             // Add item in toolbar

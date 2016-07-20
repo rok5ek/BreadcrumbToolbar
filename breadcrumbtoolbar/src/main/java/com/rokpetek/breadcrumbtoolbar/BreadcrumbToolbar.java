@@ -73,7 +73,7 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         addItem(object);
     }
 
-    public void initToolbarBackIcon() {
+    private void initToolbarBackIcon() {
         setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         setNavigationOnClickListener(new OnClickListener() {
             @Override
@@ -120,30 +120,6 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     }
 
     @Override
-    public void onBackStackChanged(int backStackCount) {
-        Log.i(TAG, "[app] onBackStackChanged blockBackStackChanged:" + blockBackStackChanged);
-//        if (!blockBackStackChanged && toolbarItemStack != null) {
-//            boolean remove = toolbarItemStack.size() > backStackCount;
-//            Log.i(TAG, "[app] onBackStackChanged toolbarItemStack:" + toolbarItemStack.size() + " backStackCount:" + backStackCount + " remove:" + remove);
-//            if (backStackCount <= 0) {
-//                // Clean toolbar since back stack is zero
-//                cleanToolbar();
-//            } else {
-//                if (remove) {
-//                    removeItem();
-//                } else {
-//                    addItem(new BreadcrumbToolbarItem("item"));
-//                }
-//            }
-//        }
-    }
-
-    @Override
-    public void onBlockBackStackChanged(boolean block) {
-        this.blockBackStackChanged = block;
-    }
-
-    @Override
     public void onItemClick(int position) {
         Log.i(TAG, "[app] onItemClick position:" + position + " breadcrumbScrollView:" + breadcrumbScrollView + " breadcrumbToolbarListener:" + breadcrumbToolbarListener);
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
@@ -153,13 +129,11 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
                 // We must call pop on views after removing the top item from stack
                 breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
             }
-            // Cancel block onBackStackChanged()
-            onBlockBackStackChanged(false);
             breadcrumbScrollView.removeBreadcrumbItemFrom(position);
         }
     }
 
-    public int getStackSize() {
+    private int getStackSize() {
         return toolbarItemStack.size();
     }
 
@@ -167,11 +141,11 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         this.breadcrumbToolbarListener = listener;
     }
 
-    public Stack getToolbarItemStack() {
+    private Stack getToolbarItemStack() {
         return toolbarItemStack;
     }
 
-    public void setRestoredStack(Stack<BreadcrumbToolbarItem> stack) {
+    private void setRestoredStack(Stack<BreadcrumbToolbarItem> stack) {
         for (BreadcrumbToolbarItem item : stack) {
             addItem(item);
         }

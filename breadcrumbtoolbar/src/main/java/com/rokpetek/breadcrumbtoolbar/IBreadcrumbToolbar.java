@@ -11,8 +11,4 @@ public interface IBreadcrumbToolbar {
     void removeItem();
 
     void cleanToolbar();
-
-    void onBackStackChanged(int backStackCount);
-
-    void onBlockBackStackChanged(boolean block);
 }
