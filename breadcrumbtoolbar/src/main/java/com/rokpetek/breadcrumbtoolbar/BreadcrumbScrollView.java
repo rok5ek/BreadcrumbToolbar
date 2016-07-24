@@ -2,6 +2,7 @@ package com.rokpetek.breadcrumbtoolbar;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,10 @@ import android.widget.LinearLayout;
 
 
 public class BreadcrumbScrollView extends HorizontalScrollView {
+
+    private static final String TAG = BreadcrumbScrollView.class.getSimpleName();
+
+
     private LayoutInflater inflater;
 
     private BreadcrumbItemCallback breadcrumbItemCallback;
@@ -66,7 +71,10 @@ public class BreadcrumbScrollView extends HorizontalScrollView {
 
     public void removeBreadcrumbItemFrom(int position) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.breadcrumb_scroll_view_inner_layout);
+
+        Log.d(TAG, "[toolbar] removeBreadcrumbItemFrom getChildCount():" + linearLayout.getChildCount() + " position:" + position);
         for (int i = linearLayout.getChildCount(); i > position; i--) {
+            Log.d(TAG, "[toolbar] remove i:" + i + " ->" + (i - 1));
             if (linearLayout.getChildAt(i - 1) != null) {
                 linearLayout.removeViewAt(i - 1);
             }
@@ -75,7 +83,9 @@ public class BreadcrumbScrollView extends HorizontalScrollView {
 
     public void popBreadcrumbItem(int position) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.breadcrumb_scroll_view_inner_layout);
-        linearLayout.removeViewAt(position);
+        if (linearLayout.getChildAt(position) != null) {
+            linearLayout.removeViewAt(position);
+        }
     }
 
     OnClickListener onClickItemListener = new OnClickListener() {

@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,9 @@ import com.rokpetek.breadcrumbtoolbar.BreadcrumbToolbar;
 import com.rokpetek.breadcrumbtoolbar.BreadcrumbToolbar.BreadcrumbToolbarListener;
 
 public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbToolbarListener {
+
+    private static final String TAG = BreadcrumbActivity.class.getSimpleName();
+
 
     // Gui
     private BreadcrumbToolbar toolbar;
@@ -66,7 +70,8 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     @Override
     public void onBreadcrumbToolbarItemPop(int stackSize) {
         // We need remove fragments on every "item pop" callback
-        getSupportFragmentManager().popBackStackImmediate();
+        Log.d(TAG, "[toolbar] onBreadcrumbToolbarItemPop stackSize:" + stackSize);
+        getSupportFragmentManager().popBackStack();
     }
 
     @Override
