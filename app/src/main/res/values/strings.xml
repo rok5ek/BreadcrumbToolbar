@@ -3,6 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="welcome_title">Welcome my Breadcrumbs!</string>
     <string name="new_folder_created">New folder created</string>
-    <string name="breadcrumb_name">Breadcrumb %1$d</string>
+    <string name="breadcrumb_name">Crumb %1$s</string>
     <string name="undo">Undo</string>
 </resources>

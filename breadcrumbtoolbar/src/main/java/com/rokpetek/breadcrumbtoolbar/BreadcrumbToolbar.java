@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +14,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
-public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements IBreadcrumbToolbar, BreadcrumbScrollView.BreadcrumbItemCallback {
-
-    private static final String TAG = BreadcrumbToolbar.class.getSimpleName();
-
+public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements IBreadcrumbToolbar, BreadcrumbScrollView.BreadcrumbItemCallback, OnBackStackChangedListener {
 
     public static final String SAVE_INSTANCE_STATE_TAG = "save_instance_state_tag";
     public static final String SAVE_TOOLBAR_STACK_TAG = "save_toolbar_stack_tag";
@@ -25,11 +22,12 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     // Listeners
     private BreadcrumbToolbarListener breadcrumbToolbarListener;
 
-    // Variables
-    private boolean blockBackStackChanged;
-
     public interface BreadcrumbToolbarListener {
         void onBreadcrumbToolbarItemPop(int stackSize);
+
+        int getFragmentStackSize();
+
+        String getFragmentName();
     }
 
     // You can serve any kind of object on the stack
@@ -78,7 +76,7 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         setNavigationOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeItem();
+                breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
             }
         });
     }
@@ -96,8 +94,6 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     @Override
     public void removeItem() {
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
-            // We must call pop on views after removing the top item from stack
-            breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
             if (toolbarItemStack.size() > 1) {
                 toolbarItemStack.pop();
                 breadcrumbScrollView.popBreadcrumbItem(toolbarItemStack.size());
@@ -121,15 +117,26 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
 
     @Override
     public void onItemClick(int position) {
-        Log.i(TAG, "[app] onItemClick position:" + position + " breadcrumbScrollView:" + breadcrumbScrollView + " breadcrumbToolbarListener:" + breadcrumbToolbarListener);
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
             for (int i = toolbarItemStack.size(); i > position; i--) {
-                Log.i(TAG, "[app] onItemClick toolbarItemStack i:" + i);
                 toolbarItemStack.pop();
                 // We must call pop on views after removing the top item from stack
                 breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
             }
             breadcrumbScrollView.removeBreadcrumbItemFrom(position);
+        }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (breadcrumbToolbarListener != null) {
+            int stackSize = breadcrumbToolbarListener.getFragmentStackSize();
+            String itemName = breadcrumbToolbarListener.getFragmentName();
+            if (stackSize > toolbarItemStack.size()) {
+                addItem(new BreadcrumbToolbarItem(itemName));
+            } else {
+                removeItem();
+            }
         }
     }
 

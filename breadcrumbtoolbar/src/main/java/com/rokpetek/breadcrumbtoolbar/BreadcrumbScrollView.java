@@ -67,7 +67,9 @@ public class BreadcrumbScrollView extends HorizontalScrollView {
     public void removeBreadcrumbItemFrom(int position) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.breadcrumb_scroll_view_inner_layout);
         for (int i = linearLayout.getChildCount(); i > position; i--) {
-            linearLayout.removeViewAt(i - 1);
+            if (linearLayout.getChildAt(i - 1) != null) {
+                linearLayout.removeViewAt(i - 1);
+            }
         }
     }
 

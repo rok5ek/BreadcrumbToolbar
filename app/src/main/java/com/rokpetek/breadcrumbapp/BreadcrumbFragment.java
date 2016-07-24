@@ -9,23 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * A placeholder fragment containing a simple view.
- */
+
 public class BreadcrumbFragment extends Fragment {
 
-    public static final String FRAGMENT_NUMBER_TAG = "fragment_number";
+    public static final String FRAGMENT_NAME_TAG = "fragment_name";
 
-    public static void open(FragmentActivity activity, boolean addToBackStack, Integer number) {
+    private String fragmentName;
+
+    public static void open(FragmentActivity activity, boolean addToBackStack, String name) {
         Fragment fragment = new BreadcrumbFragment();
         FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_content, fragment);
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
-        if (number != null) {
+        if (name != null) {
             Bundle bundle = new Bundle();
-            bundle.putInt(FRAGMENT_NUMBER_TAG, number);
+            bundle.putString(FRAGMENT_NAME_TAG, name);
             fragment.setArguments(bundle);
         }
         ft.commit();
@@ -40,12 +40,13 @@ public class BreadcrumbFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_breadcrumb, container, false);
         TextView title = (TextView) rootView.findViewById(R.id.breadcrumb_folder_name);
         if (getArguments() != null) {
-            String text = getString(R.string.breadcrumb_name, getArguments().getInt(FRAGMENT_NUMBER_TAG));
-            title.setText(text);
-
-//            BreadcrumbToolbarItem item = new BreadcrumbToolbarItem(text);
-//            .addItem(item);
+            fragmentName = getArguments().getString(FRAGMENT_NAME_TAG);
+            title.setText(fragmentName);
         }
         return rootView;
+    }
+
+    public String getFragmentName() {
+        return fragmentName;
     }
 }
