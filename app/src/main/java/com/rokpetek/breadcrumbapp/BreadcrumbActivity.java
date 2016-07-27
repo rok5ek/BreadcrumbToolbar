@@ -2,9 +2,12 @@ package com.rokpetek.breadcrumbapp;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +16,7 @@ import android.view.View;
 import com.rokpetek.breadcrumbtoolbar.BreadcrumbToolbar;
 import com.rokpetek.breadcrumbtoolbar.BreadcrumbToolbar.BreadcrumbToolbarListener;
 
-public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbToolbarListener {
+public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbToolbarListener, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = BreadcrumbActivity.class.getSimpleName();
 
@@ -24,18 +27,38 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_breadcrumb);
-
-        // We can't use setSupportActionBar()
-        toolbar = (BreadcrumbToolbar) findViewById(R.id.toolbar);
-        toolbar.setBreadcrumbToolbarListener(this);
-        toolbar.setTitle(R.string.app_name);
-        getSupportFragmentManager().addOnBackStackChangedListener(toolbar);
+        setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
             BreadcrumbFragment.open(this, false, null);
         }
 
+        bindViews();
+    }
+
+    private void bindViews() {
+        // Bind toolbar
+        toolbar = (BreadcrumbToolbar) findViewById(R.id.toolbar);
+        // We can't use setSupportActionBar()
+        toolbar.setBreadcrumbToolbarListener(this);
+        toolbar.setTitle(R.string.app_name);
+        // Set animated drawer icon to toolbar
+        DrawerArrowDrawable drawerArrow = new DrawerArrowDrawable(this);
+        drawerArrow.setColor(ContextCompat.getColor(this, android.R.color.white));
+        toolbar.setNavigationIcon(drawerArrow);
+        getSupportFragmentManager().addOnBackStackChangedListener(toolbar);
+
+        // Bind drawer
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+//        navigationView.setNavigationItemSelectedListener(this);
+
+        // Bind FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener((View view) -> {
             String fragmentName = getString(R.string.breadcrumb_name, getFragmentStackSize() + 1);
@@ -51,9 +74,14 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_breadcrumb, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -67,6 +95,7 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
         return super.onOptionsItemSelected(item);
     }
 
+    // Toolbar callbacks
     @Override
     public void onBreadcrumbToolbarItemPop(int stackSize) {
         // We need remove fragments on every "item pop" callback
@@ -86,5 +115,11 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
             return ((BreadcrumbFragment) fragment).getFragmentName();
         }
         return null;
+    }
+
+    // Drawer callbacks
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        return false;
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/action_home"/>
+        <item
+            android:id="@+id/nav_add_fragment"
+            android:icon="@drawable/ic_create_new_folder_black_24dp"
+            android:title="@string/action_new_folder"/>
+    </group>
+    <item android:title="@string/section_settings">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="@string/action_help"/>
+        </menu>
+    </item>
+</menu>

@@ -7,7 +7,7 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context=".BreadcrumbFragment"
-                tools:showIn="@layout/activity_breadcrumb">
+                tools:showIn="@layout/content_breadcrumb">
     <TextView
         android:id="@+id/breadcrumb_folder_name"
         android:layout_width="wrap_content"

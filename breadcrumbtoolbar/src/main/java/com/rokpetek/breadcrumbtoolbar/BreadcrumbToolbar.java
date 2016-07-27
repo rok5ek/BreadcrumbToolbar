@@ -1,10 +1,12 @@
 package com.rokpetek.breadcrumbtoolbar;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -19,7 +21,10 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
 
     private static final String TAG = BreadcrumbToolbar.class.getSimpleName();
 
+    // Data
+    private String toolbarTitle;
 
+    // Meta
     public static final String SAVE_INSTANCE_STATE_TAG = "save_instance_state_tag";
     public static final String SAVE_TOOLBAR_STACK_TAG = "save_toolbar_stack_tag";
 
@@ -67,24 +72,45 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         breadcrumbScrollView.setBreadcrumbItemCallback(this);
         addView(breadcrumbScrollView);
 
-        // Show toolbar back icon
-        initToolbarBackIcon();
+        // Show toolbar back icon if no previous icon existed. Animate otherwise
+        if (getNavigationIcon() instanceof DrawerArrowDrawable) {
+            animateNavigationIcon(((DrawerArrowDrawable) getNavigationIcon()), true);
+        } else {
+            initNavigationListener(true);
+        }
 
         // Primary title needs to be replaced with the breadcrumb item
+        if (getTitle() != null) {
+            toolbarTitle = getTitle().toString();
+        }
         setTitle("");
 
         // Breadcrumb scroll view is now initialized and needs its first root element
         addItem(object);
     }
 
-    private void initToolbarBackIcon() {
-        setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+    private void initNavigationListener(boolean withIcon) {
+        if (withIcon) {
+            setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        }
         setNavigationOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
+                if (breadcrumbToolbarListener != null) {
+                    breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(toolbarItemStack.size());
+                }
             }
         });
+    }
+
+    private void animateNavigationIcon(DrawerArrowDrawable arrowDrawable, boolean showArrow) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(arrowDrawable, "progress", showArrow ? 1 : 0).setDuration(300);
+        animator.start();
+        if (showArrow) {
+            initNavigationListener(false);
+        } else {
+            // TODO hamburger icon on click set listener
+        }
     }
 
     @Override
@@ -101,7 +127,7 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     @Override
     public void removeItem() {
         stackSize--;
-        Log.d(TAG, "[toolbar] removeItem stackSize:" + stackSize);
+        Log.d(TAG, "[toolbar] removeItem stackSize zzz:" + stackSize);
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
             if (stackSize > 0) {
                 toolbarItemStack.pop();
@@ -116,11 +142,20 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     public void cleanToolbar() {
         if (breadcrumbScrollView != null) {
             toolbarItemStack.removeAllElements();
-            // Navigation icon must be removed
-            setNavigationIcon(null);
 
+            // Navigation icon must be removed if none existed or animated.
+            if (getNavigationIcon() instanceof DrawerArrowDrawable) {
+                animateNavigationIcon(((DrawerArrowDrawable) getNavigationIcon()), false);
+            } else {
+                setNavigationIcon(null);
+            }
+
+            // Remove scroll view
             removeView(breadcrumbScrollView);
             breadcrumbScrollView = null;
+
+            // Reset the toolbar title
+            setTitle(toolbarTitle);
         }
     }
 
@@ -132,7 +167,6 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
                 // We must call pop on views after removing the top item from stack
                 breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(i - 1);
             }
-//            breadcrumbScrollView.removeBreadcrumbItemFrom(position);
         }
     }
 
