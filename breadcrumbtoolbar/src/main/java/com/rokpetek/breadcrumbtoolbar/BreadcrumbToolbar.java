@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
-public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements IBreadcrumbToolbar, BreadcrumbScrollView.BreadcrumbItemCallback, OnBackStackChangedListener {
+public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements IBreadcrumbToolbar, BreadcrumbScrollView.BreadcrumbItemCallback {
 
     private static final String TAG = BreadcrumbToolbar.class.getSimpleName();
 
@@ -34,7 +33,7 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     public interface BreadcrumbToolbarListener {
         void onBreadcrumbToolbarItemPop(int stackSize);
 
-        int getFragmentStackSize();
+        void onDrawerToggleReset();
 
         String getFragmentName();
     }
@@ -72,14 +71,14 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         breadcrumbScrollView.setBreadcrumbItemCallback(this);
         addView(breadcrumbScrollView);
 
-        // Show toolbar back icon if no previous icon existed. Animate otherwise
+        // Animate otherwise toolbar hamburger icon if exists, set navigation back icon otherwise
         if (getNavigationIcon() instanceof DrawerArrowDrawable) {
             animateNavigationIcon(((DrawerArrowDrawable) getNavigationIcon()), true);
         } else {
             initNavigationListener(true);
         }
 
-        // Primary title needs to be replaced with the breadcrumb item
+        // Primary title needs to be saved and reset to make place
         if (getTitle() != null) {
             toolbarTitle = getTitle().toString();
         }
@@ -109,7 +108,10 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         if (showArrow) {
             initNavigationListener(false);
         } else {
-            // TODO hamburger icon on click set listener
+            // Reset the drawer toggle listener
+            if (breadcrumbToolbarListener != null) {
+                breadcrumbToolbarListener.onDrawerToggleReset();
+            }
         }
     }
 
@@ -163,17 +165,14 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     public void onItemClick(int position) {
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
             for (int i = toolbarItemStack.size(); i > position; i--) {
-//                toolbarItemStack.pop();
                 // We must call pop on views after removing the top item from stack
                 breadcrumbToolbarListener.onBreadcrumbToolbarItemPop(i - 1);
             }
         }
     }
 
-    @Override
-    public void onBackStackChanged() {
+    public void onToolbarAction(int toolbarStackSize) {
         if (breadcrumbToolbarListener != null) {
-            int toolbarStackSize = breadcrumbToolbarListener.getFragmentStackSize();
             String itemName = breadcrumbToolbarListener.getFragmentName();
 
             Log.d(TAG, "[toolbar] onBackStackChanged toolbarStackSize:" + toolbarStackSize + " stackSize:" + stackSize + " toolbarItemStack:" + toolbarItemStack.size() + " itemName:" + itemName);
