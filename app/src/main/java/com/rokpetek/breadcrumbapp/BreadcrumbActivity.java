@@ -29,6 +29,7 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     // Gui
     private BreadcrumbToolbar toolbar;
     private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
     private FloatingActionButton fab;
 
     @Override
@@ -81,8 +82,30 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
 
     private void bindDrawerToggle() {
         if (drawer != null && toolbar != null) {
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                    int stackSize = getSupportFragmentManager().getBackStackEntryCount();
+                    Log.d(TAG, "[toolbar] onDrawerClosed stackSize:" + stackSize);
+                    if (stackSize > 0) {
+                        super.onDrawerSlide(drawerView, 1);
+                    }
+                }
+
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    int stackSize = getSupportFragmentManager().getBackStackEntryCount();
+                    Log.d(TAG, "[toolbar] onDrawerClosed stackSize:" + stackSize);
+                    if (stackSize <= 0) {
+                        super.onDrawerSlide(drawerView, slideOffset);
+                    } else {
+                        super.onDrawerSlide(drawerView, 1); // this disables the animation
+                    }
+                }
+            };
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -129,6 +152,8 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     @Override
     public void onDrawerToggleReset() {
         // Leave this empty if you aren't using a drawer implementation
+        int stackSize = getSupportFragmentManager().getBackStackEntryCount();
+        Log.d(TAG, "[toolbar] onDrawerToggleReset stackSize:" + stackSize);
         bindDrawerToggle();
     }
 
