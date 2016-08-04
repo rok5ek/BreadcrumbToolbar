@@ -80,10 +80,12 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
             initNavigationListener(true);
         }
 
-        // Primary title needs to be saved and reset to make place
+        // Primary title needs to be saved
         if (getTitle() != null) {
             toolbarTitle = getTitle().toString();
         }
+
+        // Clear toolbar title on breadcrumb before adding breadcrumbs
         setTitle("");
 
         // Breadcrumb scroll view is now initialized and needs its first root element
@@ -191,7 +193,7 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         }
     }
 
-    public void onToolbarAction(int toolbarStackSize) {
+    public void onBreadcrumbAction(int toolbarStackSize) {
         if (breadcrumbToolbarListener != null) {
             String itemName = breadcrumbToolbarListener.getFragmentName();
 

@@ -83,30 +83,7 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
     private void bindDrawerToggle() {
         if (drawer != null && toolbar != null) {
             toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-
-//                @Override
-//                public void onDrawerClosed(View drawerView) {
-//                    super.onDrawerClosed(drawerView);
-//                    int stackSize = getSupportFragmentManager().getBackStackEntryCount();
-//                    Log.d(TAG, "[toolbar] onDrawerClosed stackSize:" + stackSize);
-//                    if (stackSize > 0) {
-//                        super.onDrawerSlide(drawerView, 1);
-//                    }
-//                }
-//
-//                @Override
-//                public void onDrawerSlide(View drawerView, float slideOffset) {
-//                    int stackSize = getSupportFragmentManager().getBackStackEntryCount();
-//                    Log.d(TAG, "[toolbar] onDrawerClosed stackSize:" + stackSize);
-//                    if (stackSize <= 0) {
-//                        super.onDrawerSlide(drawerView, slideOffset);
-//                    } else {
-//                        super.onDrawerSlide(drawerView, 1); // this disables the animation
-//                    }
-//                }
-            };
-
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
         }
@@ -143,7 +120,7 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
             drawer.removeDrawerListener(toggle);
         }
         if (toolbar != null) {
-            toolbar.onToolbarAction(getSupportFragmentManager().getBackStackEntryCount());
+            toolbar.onBreadcrumbAction(getSupportFragmentManager().getBackStackEntryCount());
         }
     }
 
