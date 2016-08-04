@@ -1,5 +1,7 @@
 package com.rokpetek.breadcrumbtoolbar;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
@@ -102,16 +104,34 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         });
     }
 
-    private void animateNavigationIcon(DrawerArrowDrawable arrowDrawable, boolean showArrow) {
+    private void animateNavigationIcon(DrawerArrowDrawable arrowDrawable, final boolean showArrow) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(arrowDrawable, "progress", showArrow ? 1 : 0).setDuration(300);
         animator.start();
+        animator.addListener(new AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                if (!showArrow && breadcrumbToolbarListener != null) {
+                    breadcrumbToolbarListener.onDrawerToggleReset();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
         if (showArrow) {
             initNavigationListener(false);
-        } else {
-            // Reset the drawer toggle listener
-            if (breadcrumbToolbarListener != null) {
-                breadcrumbToolbarListener.onDrawerToggleReset();
-            }
         }
     }
 
