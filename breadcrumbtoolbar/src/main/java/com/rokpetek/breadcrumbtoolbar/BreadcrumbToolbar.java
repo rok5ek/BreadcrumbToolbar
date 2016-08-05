@@ -9,7 +9,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,34 +17,33 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
-public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements IBreadcrumbToolbar, BreadcrumbScrollView.BreadcrumbItemCallback {
+public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar implements BreadcrumbScrollView.BreadcrumbItemCallback {
 
     private static final String TAG = BreadcrumbToolbar.class.getSimpleName();
 
+    // Gui
+    private BreadcrumbScrollView breadcrumbScrollView;
+
+    // Listeners
+    private BreadcrumbToolbarListener breadcrumbToolbarListener;
+
     // Data
+    private Stack<BreadcrumbToolbarItem> toolbarItemStack = new Stack<>();
     private String toolbarTitle;
 
     // Meta
     public static final String SAVE_INSTANCE_STATE_TAG = "save_instance_state_tag";
     public static final String SAVE_TOOLBAR_STACK_TAG = "save_toolbar_stack_tag";
-
-    // Listeners
-    private BreadcrumbToolbarListener breadcrumbToolbarListener;
+    public static final String PROGRESS_ANIM_TAG = "progress";
+    public static final int ICON_ANIM_DURATION = 300;
 
     public interface BreadcrumbToolbarListener {
         void onBreadcrumbToolbarItemPop(int stackSize);
 
-        void onDrawerToggleReset();
+        void onBreadcrumbToolbarEmpty();
 
         String getFragmentName();
     }
-
-    // You can serve any kind of object on the stack
-    private Stack<BreadcrumbToolbarItem> toolbarItemStack = new Stack<>();
-    private LayoutInflater inflater;
-    private BreadcrumbScrollView breadcrumbScrollView;
-
-    int stackSize;
 
     public BreadcrumbToolbar(Context context) {
         super(context);
@@ -62,18 +60,20 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         init();
     }
 
-    public void init() {
+    private void init() {
         setSaveEnabled(true);
-        inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    @Override
     public void initToolbar(BreadcrumbToolbarItem object) {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         breadcrumbScrollView = (BreadcrumbScrollView) inflater.inflate(R.layout.breadcrumb_scroll_view, null);
         breadcrumbScrollView.setBreadcrumbItemCallback(this);
         addView(breadcrumbScrollView);
 
-        // Animate otherwise toolbar hamburger icon if exists, set navigation back icon otherwise
+        // Breadcrumb scroll view is now initialized and needs its first root element
+        addItem(object);
+
+        // Animate toolbar toggle icon if exists, set navigation back icon otherwise.
         if (getNavigationIcon() instanceof DrawerArrowDrawable) {
             animateNavigationIcon(((DrawerArrowDrawable) getNavigationIcon()), true);
         } else {
@@ -88,8 +88,6 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         // Clear toolbar title on breadcrumb before adding breadcrumbs
         setTitle("");
 
-        // Breadcrumb scroll view is now initialized and needs its first root element
-        addItem(object);
     }
 
     private void initNavigationListener(boolean withIcon) {
@@ -107,70 +105,64 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
     }
 
     private void animateNavigationIcon(DrawerArrowDrawable arrowDrawable, final boolean showArrow) {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(arrowDrawable, "progress", showArrow ? 1 : 0).setDuration(300);
+        if (showArrow) {
+            // Set a back click listener on toolbar icon when showing an arrow
+            initNavigationListener(false);
+        }
+        ObjectAnimator animator = ObjectAnimator.ofFloat(arrowDrawable, PROGRESS_ANIM_TAG, showArrow ? 1 : 0).setDuration(ICON_ANIM_DURATION);
         animator.start();
         animator.addListener(new AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                if (!showArrow && breadcrumbToolbarListener != null) {
-                    breadcrumbToolbarListener.onDrawerToggleReset();
+                // Animating end from navigation icon to hamburger icon
+                if (breadcrumbToolbarListener != null && !showArrow) {
+                    breadcrumbToolbarListener.onBreadcrumbToolbarEmpty();
                 }
             }
 
             @Override
             public void onAnimationCancel(Animator animator) {
-
             }
 
             @Override
             public void onAnimationRepeat(Animator animator) {
-
             }
         });
-        if (showArrow) {
-            initNavigationListener(false);
-        }
     }
 
-    @Override
     public void addItem(@NonNull BreadcrumbToolbarItem object) {
         if (breadcrumbScrollView != null) {
             toolbarItemStack.add(object);
-            stackSize++;
             breadcrumbScrollView.addItem(object.getName(), toolbarItemStack.size());
         } else {
             initToolbar(object);
         }
     }
 
-    @Override
     public void removeItem() {
-        stackSize--;
-        Log.d(TAG, "[toolbar] removeItem stackSize zzz:" + stackSize);
+        toolbarItemStack.pop();
         if (breadcrumbScrollView != null && breadcrumbToolbarListener != null) {
-            if (stackSize > 0) {
-                toolbarItemStack.pop();
-                breadcrumbScrollView.popBreadcrumbItem(stackSize);
+            if (toolbarItemStack.size() > 0) {
+                breadcrumbScrollView.popBreadcrumbItem(toolbarItemStack.size());
             } else {
                 cleanToolbar();
             }
         }
     }
 
-    @Override
     public void cleanToolbar() {
         if (breadcrumbScrollView != null) {
             toolbarItemStack.removeAllElements();
 
-            // Navigation icon must be removed if none existed or animated.
             if (getNavigationIcon() instanceof DrawerArrowDrawable) {
+                // Animate navigation icon
                 animateNavigationIcon(((DrawerArrowDrawable) getNavigationIcon()), false);
             } else {
+                // Navigation icon must be removed if none existed
                 setNavigationIcon(null);
             }
 
@@ -195,10 +187,8 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
 
     public void onBreadcrumbAction(int toolbarStackSize) {
         if (breadcrumbToolbarListener != null) {
-            String itemName = breadcrumbToolbarListener.getFragmentName();
-
-            Log.d(TAG, "[toolbar] onBackStackChanged toolbarStackSize:" + toolbarStackSize + " stackSize:" + stackSize + " toolbarItemStack:" + toolbarItemStack.size() + " itemName:" + itemName);
-            if (toolbarStackSize > stackSize) {
+            if (toolbarStackSize > toolbarItemStack.size()) {
+                String itemName = breadcrumbToolbarListener.getFragmentName();
                 addItem(new BreadcrumbToolbarItem(itemName));
             } else {
                 removeItem();
@@ -206,16 +196,8 @@ public class BreadcrumbToolbar extends android.support.v7.widget.Toolbar impleme
         }
     }
 
-    private int getStackSize() {
-        return toolbarItemStack.size();
-    }
-
     public void setBreadcrumbToolbarListener(BreadcrumbToolbarListener listener) {
         this.breadcrumbToolbarListener = listener;
-    }
-
-    private Stack getToolbarItemStack() {
-        return toolbarItemStack;
     }
 
     private void setRestoredStack(Stack<BreadcrumbToolbarItem> stack) {
