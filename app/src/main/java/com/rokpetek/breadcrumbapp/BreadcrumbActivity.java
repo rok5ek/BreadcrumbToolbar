@@ -65,7 +65,15 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
         fab.setOnClickListener(this::openBreadCrumbFragment);
     }
 
-    // Action methods
+    private void bindDrawerToggle() {
+        if (drawer != null && toolbar != null) {
+            toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+        }
+    }
+
     private void openBreadCrumbFragment(View view) {
         String fragmentName = getString(R.string.breadcrumb_name, getSupportFragmentManager().getBackStackEntryCount() + 1);
         // Open a new fragment
@@ -78,12 +86,11 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
                 }).show();
     }
 
-    private void bindDrawerToggle() {
-        if (drawer != null && toolbar != null) {
-            toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
-            toggle.syncState();
+    private void clearFragmentBackStack() {
+        FragmentManager fm = getSupportFragmentManager();
+        int count = fm.getBackStackEntryCount();
+        for (int i = 0; i < count; ++i) {
+            fm.popBackStack();
         }
     }
 
@@ -163,13 +170,5 @@ public class BreadcrumbActivity extends AppCompatActivity implements BreadcrumbT
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
-    }
-
-    private void clearFragmentBackStack() {
-        FragmentManager fm = getSupportFragmentManager();
-        int count = fm.getBackStackEntryCount();
-        for (int i = 0; i < count; ++i) {
-            fm.popBackStack();
-        }
     }
 }
