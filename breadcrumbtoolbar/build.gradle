@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         minSdkVersion 14
@@ -21,5 +22,14 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+}
+
+publish {
+    userOrg = 'rok5ek'
+    groupId = 'com.rokpetek.breadcrumbtoolbar'
+    artifactId = 'breadcrumb-toolbar'
+    publishVersion = '1.0'
+    desc = 'Breadcrumb Toolbar provides a nested view interaction embedded into the vanilla Toolbar.'
+    website = 'https://github.com/rok5ek/BreadcrumbToolbar'
 }
