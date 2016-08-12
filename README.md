@@ -21,7 +21,7 @@ compile 'com.rokpetek.breadcrumbtoolbar:breadcrumb-toolbar:1.0'
 ```
 
 ## Usage
-When adding a new fragment the toolbar is notified to add an item on its "breadcrumb" stack. You can use it with the animated drawer hamburger icon or without.
+When adding a new fragment the toolbar is notified to add an item on its "breadcrumb" stack. You can use it with the animated drawer hamburger icon or without. Sample app is included.
 
 ## Compatibility
 
