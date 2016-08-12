@@ -31,3 +31,9 @@ When adding a new fragment the toolbar is notified to add an item on its "breadc
 ## Support
 
 - RTL support (right to left)
+
+## Bintray
+Publish to bintray (parameters located in local.properties)
+```bash
+$ ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+```
