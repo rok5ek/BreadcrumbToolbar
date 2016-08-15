@@ -1,4 +1,6 @@
-# Breadcrumb Toolbar
+# Breadcrumb Toolbar 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BreadcrumbToolbar-green.svg?style=true)](https://android-arsenal.com/details/1/4155)
+
 Breadcrumb Toolbar provides a nested view interaction embedded into the vanilla Toolbar.
 
 ![alt tag](https://cloud.githubusercontent.com/assets/4641831/17498901/d62a645a-5dd2-11e6-9cab-e1d589126afb.gif)
